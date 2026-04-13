@@ -1,0 +1,620 @@
+/* ─── Status Bar ───────────────────────────────────────────────────────────── */
+
+.moyu-status {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+}
+
+.moyu-status:hover {
+  color: var(--interactive-accent);
+}
+
+.moyu-status-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.moyu-status-time {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+}
+
+/* ─── Modal Shell ──────────────────────────────────────────────────────────── */
+
+.moyu-modal {
+  max-width: 460px;
+}
+
+.moyu-modal .modal-content {
+  padding: 0;
+}
+
+.moyu-content {
+  padding: 24px;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────────── */
+
+.moyu-card {
+  background: var(--background-secondary);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+/* ─── Dashboard ────────────────────────────────────────────────────────────── */
+
+.moyu-dashboard {
+  text-align: center;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.moyu-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.moyu-wage-display {
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: var(--text-normal);
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+.moyu-currency {
+  font-size: 1.8rem;
+  vertical-align: super;
+  opacity: 0.5;
+}
+
+.moyu-capsule-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.moyu-capsule {
+  background: var(--background-primary);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.moyu-capsule-val {
+  color: var(--text-normal);
+  font-weight: 600;
+}
+
+/* ─── Goal Bar ─────────────────────────────────────────────────────────────── */
+
+.moyu-goal-bar {
+  background: rgba(52, 199, 89, 0.1);
+  color: var(--text-normal);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.moyu-goal-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+}
+
+.moyu-goal-input {
+  border: none;
+  background: transparent;
+  color: var(--text-normal);
+  font-weight: 700;
+  width: 50px;
+  text-align: center;
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--text-faint);
+  outline: none;
+}
+
+/* ─── Timer Grid ───────────────────────────────────────────────────────────── */
+
+.moyu-timer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.moyu-timer-unit {
+  background: var(--background-secondary);
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.moyu-timer-unit:hover {
+  border-color: var(--interactive-accent);
+}
+
+.moyu-unit-icon {
+  margin-bottom: 6px;
+  opacity: 0.4;
+  transition: 0.3s;
+}
+
+.moyu-unit-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.moyu-unit-name {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.moyu-unit-time {
+  font-family: var(--font-monospace);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 6px;
+  color: var(--text-normal);
+  letter-spacing: -0.5px;
+}
+
+/* Active states */
+
+.moyu-timer-active-fish {
+  background: var(--background-primary);
+  box-shadow: 0 8px 24px rgba(0, 113, 227, 0.2);
+  transform: scale(1.02);
+  border-color: var(--interactive-accent);
+}
+
+.moyu-timer-active-fish .moyu-unit-icon {
+  opacity: 1;
+  color: var(--interactive-accent);
+}
+
+.moyu-timer-active-fish .moyu-unit-name,
+.moyu-timer-active-fish .moyu-unit-time {
+  color: var(--interactive-accent);
+}
+
+.moyu-timer-active-hustle {
+  background: var(--background-primary);
+  box-shadow: 0 8px 24px rgba(175, 82, 222, 0.2);
+  transform: scale(1.02);
+  border-color: #af52de;
+}
+
+.moyu-timer-active-hustle .moyu-unit-icon {
+  opacity: 1;
+  color: #af52de;
+}
+
+.moyu-timer-active-hustle .moyu-unit-name,
+.moyu-timer-active-hustle .moyu-unit-time {
+  color: #af52de;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────────── */
+
+.moyu-btn-stop {
+  width: 100%;
+  background: rgba(255, 59, 48, 0.08);
+  color: #ff3b30;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.moyu-btn-stop:hover {
+  background: rgba(255, 59, 48, 0.15);
+}
+
+.moyu-btn-stop:active {
+  transform: scale(0.98);
+}
+
+/* Toolbar */
+
+.moyu-tools-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.moyu-btn-tool {
+  flex: 1;
+  padding: 10px 0;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.moyu-btn-tool:hover {
+  color: var(--text-normal);
+  border-color: var(--interactive-accent);
+}
+
+.moyu-btn-tool:active {
+  background: var(--background-primary);
+}
+
+/* Archive */
+
+.moyu-btn-archive {
+  width: 100%;
+  background: var(--text-normal);
+  color: var(--background-primary);
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.moyu-btn-archive:hover {
+  opacity: 0.9;
+}
+
+/* ─── Settings ─────────────────────────────────────────────────────────────── */
+
+.moyu-settings-wrapper {
+  margin-bottom: 14px;
+}
+
+.moyu-settings-toggle {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.moyu-settings-panel {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.moyu-input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.moyu-input-row:last-child {
+  margin-bottom: 0;
+}
+
+.moyu-input-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.moyu-input-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.moyu-input-ios {
+  background: var(--background-primary);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: 70px;
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--text-normal);
+}
+
+.moyu-input-ios:focus {
+  outline: 1px solid var(--interactive-accent);
+}
+
+/* ─── History ──────────────────────────────────────────────────────────────── */
+
+.moyu-section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-normal);
+}
+
+.moyu-chart-container {
+  margin-bottom: 16px;
+}
+
+.moyu-svg-chart {
+  width: 100%;
+  height: auto;
+}
+
+.moyu-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.moyu-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-size: 0.85rem;
+}
+
+.moyu-history-item:last-child {
+  border-bottom: none;
+}
+
+.moyu-history-date {
+  color: var(--text-muted);
+}
+
+.moyu-history-val {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.moyu-del-icon {
+  color: var(--text-faint);
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 0.8rem;
+}
+
+.moyu-del-icon:hover {
+  color: #ff3b30;
+}
+
+.moyu-history-empty {
+  color: var(--text-faint);
+  text-align: center;
+  padding: 16px 0;
+  font-size: 0.85rem;
+}
+
+/* ─── Water Lock ───────────────────────────────────────────────────────────── */
+
+.moyu-water-lock {
+  z-index: 9999;
+}
+
+.moyu-water-lock .modal-bg {
+  opacity: 1;
+  background: var(--background-primary);
+}
+
+.moyu-water-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.moyu-water-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.moyu-water-icon svg {
+  width: 64px;
+  height: 64px;
+  color: var(--interactive-accent);
+  margin-bottom: 16px;
+}
+
+.moyu-water-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: var(--text-normal);
+}
+
+.moyu-water-countdown {
+  font-family: var(--font-monospace);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.moyu-water-btn-wrap {
+  margin-top: 8px;
+}
+
+.moyu-water-btn {
+  padding: 12px 32px;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.moyu-water-btn-locked {
+  background: var(--background-secondary);
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+
+.moyu-water-btn-ready {
+  background: var(--interactive-accent);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.moyu-water-btn-ready:hover {
+  opacity: 0.9;
+}
+
+/* ─── Header / Lang Toggle ─────────────────────────────────────────────────── */
+
+.moyu-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.moyu-btn-lang {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.moyu-btn-lang:hover {
+  color: var(--text-normal);
+  border-color: var(--interactive-accent);
+}
+
+/* ─── Manual Input Modal ───────────────────────────────────────────────────── */
+
+.moyu-manual-content {
+  padding: 20px;
+}
+
+.moyu-manual-title {
+  margin: 0 0 14px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.moyu-manual-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 1rem;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
+
+.moyu-manual-input:focus {
+  outline: 1px solid var(--interactive-accent);
+}
+
+.moyu-manual-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.moyu-manual-btns button {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  cursor: pointer;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.moyu-manual-ok {
+  width: auto;
+  background: var(--text-normal) !important;
+  color: var(--background-primary) !important;
+  border-color: var(--text-normal) !important;
+}
+
+/* ─── Footer Signature ─────────────────────────────────────────────────────── */
+
+.moyu-footer {
+  text-align: center;
+  margin: 16px 0 8px;
+}
+
+.moyu-footer-link {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.moyu-footer-link:hover {
+  color: var(--interactive-accent);
+}
+
+/* ─── About Section (in Settings) ──────────────────────────────────────────── */
+
+.moyu-about {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+  text-align: center;
+}
+
+.moyu-about-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.moyu-about-desc {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+.moyu-about-links {
+  font-size: 0.75rem;
+}
+
+.moyu-about-link {
+  color: var(--interactive-accent);
+  text-decoration: none;
+}
+
+.moyu-about-link:hover {
+  text-decoration: underline;
+}
+
+.moyu-about-sep {
+  color: var(--text-faint);
+}

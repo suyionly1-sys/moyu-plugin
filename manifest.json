@@ -1,0 +1,10 @@
+{
+  "id": "moyu-plugin",
+  "name": "Moyu Timer",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Track your real hourly wage with a discreet timer",
+  "author": "innerpure",
+  "authorUrl": "https://innerpure.cn",
+  "isDesktopOnly": false
+}
