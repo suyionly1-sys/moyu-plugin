@@ -451,8 +451,27 @@ class WaterLockModal extends Modal {
 		this.remaining = plugin.data.waterLockDuration;
 	}
 
+	// Block Escape key while locked
+	private locked = true;
+	private escHandler = (e: KeyboardEvent) => {
+		if (this.locked && e.key === "Escape") {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	};
+
 	onOpen() {
+		this.locked = true;
 		this.modalEl.addClass("moyu-water-lock");
+
+		// Block Escape
+		document.addEventListener("keydown", this.escHandler, true);
+
+		// Block clicking backdrop to close
+		const bg = this.containerEl.querySelector(".modal-bg") as HTMLElement;
+		if (bg) {
+			bg.style.pointerEvents = "none";
+		}
 
 		const { contentEl } = this;
 		contentEl.empty();
@@ -489,6 +508,7 @@ class WaterLockModal extends Modal {
 				btn.disabled = false;
 				btn.removeClass("moyu-water-btn-locked");
 				btn.addClass("moyu-water-btn-ready");
+				this.locked = false;
 			}
 		}, 1000);
 
@@ -505,6 +525,7 @@ class WaterLockModal extends Modal {
 	}
 
 	onClose() {
+		document.removeEventListener("keydown", this.escHandler, true);
 		if (this.countdownInterval !== null) {
 			window.clearInterval(this.countdownInterval);
 		}
