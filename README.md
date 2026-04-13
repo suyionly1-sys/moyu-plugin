@@ -1,10 +1,8 @@
-# Moyu Timer
+# Moyu Timer / 摸鱼计时器
 
-A discreet Obsidian plugin that sits in the **bottom-right status bar** and tracks your real hourly wage by timing how much you slack off at work. Click the status bar to open the full panel.
+Obsidian 右下角状态栏计时器，帮你算清真实时薪。摸鱼多久、副业多久、实际时薪多少，一目了然。点击状态栏即可打开完整面板。
 
----
-
-**Moyu Timer** -- Obsidian 右下角状态栏计时器，帮你算清真实时薪。摸鱼多久、副业多久、实际时薪多少，一目了然。
+A discreet timer in Obsidian's bottom-right status bar that reveals your real hourly wage.
 
 ## Features
 
