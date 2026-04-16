@@ -45,6 +45,8 @@ const I18N: Record<Lang, Record<string, string>> = {
 		aboutDesc: "一个帮你看清真实时薪的小工具。",
 		aboutSite: "innerpure.cn",
 		aboutDada: "和答答聊聊",
+		archiveTitle: "确认归档",
+		deleteTitle: "确认删除",
 	},
 	en: {
 		realWage: "Actual hourly rate",
@@ -86,6 +88,8 @@ const I18N: Record<Lang, Record<string, string>> = {
 		aboutDesc: "A tool that reveals your real hourly rate.",
 		aboutSite: "innerpure.cn",
 		aboutDada: "Chat with Dada",
+		archiveTitle: "Confirm archive",
+		deleteTitle: "Confirm delete",
 	},
 };
 
@@ -137,6 +141,9 @@ const DEFAULT_DATA: MoyuData = {
 	history: [],
 };
 
+// Numeric keys that can be set from settings inputs
+type NumericDataKey = "income" | "totalHours" | "sideIncome" | "waterInterval" | "waterLockDuration";
+
 function msToTime(ms: number): string {
 	const s = Math.floor(ms / 1000);
 	const h = Math.floor(s / 3600);
@@ -147,6 +154,45 @@ function msToTime(ms: number): string {
 
 function pad(n: number): string {
 	return n < 10 ? "0" + n : String(n);
+}
+
+// ─── Confirm Modal (replaces window.confirm) ─────────────────────────────────
+
+class ConfirmModal extends Modal {
+	private message: string;
+	private title: string;
+	private onConfirm: () => void;
+
+	constructor(app: App, title: string, message: string, onConfirm: () => void) {
+		super(app);
+		this.title = title;
+		this.message = message;
+		this.onConfirm = onConfirm;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
+		contentEl.addClass("moyu-confirm-content");
+
+		contentEl.createEl("h3", { text: this.title, cls: "moyu-confirm-title" });
+		contentEl.createEl("p", { text: this.message, cls: "moyu-confirm-msg" });
+
+		const btnRow = contentEl.createDiv({ cls: "moyu-manual-btns" });
+
+		const cancelBtn = btnRow.createEl("button", { text: "Cancel", cls: "moyu-btn-tool" });
+		cancelBtn.addEventListener("click", () => this.close());
+
+		const okBtn = btnRow.createEl("button", { text: "OK", cls: "moyu-btn-archive moyu-manual-ok" });
+		okBtn.addEventListener("click", () => {
+			this.onConfirm();
+			this.close();
+		});
+	}
+
+	onClose() {
+		this.contentEl.empty();
+	}
 }
 
 // ─── Plugin ──────────────────────────────────────────────────────────────────
@@ -182,12 +228,12 @@ export default class MoyuPlugin extends Plugin {
 		this.addCommand({
 			id: "start-fish",
 			name: "Start fish mode",
-			callback: () => this.startMode("fish"),
+			callback: () => { void this.startMode("fish"); },
 		});
 		this.addCommand({
 			id: "start-hustle",
 			name: "Start hustle mode",
-			callback: () => this.startMode("hustle"),
+			callback: () => { void this.startMode("hustle"); },
 		});
 		this.addCommand({
 			id: "open-panel",
@@ -197,7 +243,7 @@ export default class MoyuPlugin extends Plugin {
 		this.addCommand({
 			id: "stop-all",
 			name: "Stop all timers",
-			callback: () => this.stopAll(),
+			callback: () => { void this.stopAll(); },
 		});
 	}
 
@@ -210,7 +256,7 @@ export default class MoyuPlugin extends Plugin {
 	async loadSettings() {
 		const saved = await this.loadData();
 		if (saved) {
-			this.data = { ...DEFAULT_DATA, ...saved };
+			this.data = { ...DEFAULT_DATA, ...(saved as Partial<MoyuData>) };
 		}
 	}
 
@@ -234,18 +280,18 @@ export default class MoyuPlugin extends Plugin {
 		return ms;
 	}
 
-	startMode(mode: "fish" | "hustle") {
+	async startMode(mode: "fish" | "hustle") {
 		if (this.data.activeMode === mode) return;
 		if (this.data.activeMode) {
-			this.stopAll();
+			await this.stopAll();
 		}
 		this.data.activeMode = mode;
 		this.data.startTime = Date.now();
-		this.save();
+		await this.save();
 		this.updateStatusBar();
 	}
 
-	stopAll() {
+	async stopAll() {
 		if (this.data.activeMode) {
 			const elapsed = Date.now() - this.data.startTime;
 			if (this.data.activeMode === "fish") {
@@ -255,11 +301,11 @@ export default class MoyuPlugin extends Plugin {
 			}
 		}
 		this.data.activeMode = null;
-		this.save();
+		await this.save();
 		this.updateStatusBar();
 	}
 
-	manualAdd(minutes: number) {
+	async manualAdd(minutes: number) {
 		const mode = this.data.activeMode || "fish";
 		if (mode === "fish") {
 			this.data.fishMs += minutes * 60000;
@@ -268,7 +314,7 @@ export default class MoyuPlugin extends Plugin {
 			this.data.hustleMs += minutes * 60000;
 			if (this.data.hustleMs < 0) this.data.hustleMs = 0;
 		}
-		this.save();
+		await this.save();
 	}
 
 	calcWages() {
@@ -305,7 +351,7 @@ export default class MoyuPlugin extends Plugin {
 		return { realWage, blended, base, goalMsg, fMs, hMs };
 	}
 
-	archiveDay() {
+	async archiveDay() {
 		const fMs = this.getCurrentFishMs();
 		const hMs = this.getCurrentHustleMs();
 		const blended =
@@ -324,12 +370,12 @@ export default class MoyuPlugin extends Plugin {
 		this.data.hustleMs = 0;
 		this.data.sideIncome = 0;
 		this.data.activeMode = null;
-		this.save();
+		await this.save();
 	}
 
-	deleteRecord(index: number) {
+	async deleteRecord(index: number) {
 		this.data.history.splice(index, 1);
-		this.save();
+		await this.save();
 	}
 
 	updateStatusBar() {
@@ -451,7 +497,6 @@ class WaterLockModal extends Modal {
 		this.remaining = plugin.data.waterLockDuration;
 	}
 
-	// Block Escape key while locked
 	private locked = true;
 	private escHandler = (e: KeyboardEvent) => {
 		if (this.locked && e.key === "Escape") {
@@ -464,13 +509,12 @@ class WaterLockModal extends Modal {
 		this.locked = true;
 		this.modalEl.addClass("moyu-water-lock");
 
-		// Block Escape
 		document.addEventListener("keydown", this.escHandler, true);
 
-		// Block clicking backdrop to close
-		const bg = this.containerEl.querySelector(".modal-bg") as HTMLElement;
+		// Block clicking backdrop to close — use CSS class instead of inline style
+		const bg = this.containerEl.querySelector(".modal-bg");
 		if (bg) {
-			bg.style.pointerEvents = "none";
+			bg.addClass("moyu-no-pointer");
 		}
 
 		const { contentEl } = this;
@@ -520,7 +564,7 @@ class WaterLockModal extends Modal {
 
 		const closeBtn = this.modalEl.querySelector(".modal-close-button");
 		if (closeBtn) {
-			(closeBtn as HTMLElement).style.display = "none";
+			closeBtn.addClass("moyu-hidden");
 		}
 	}
 
@@ -601,8 +645,6 @@ class MoyuModal extends Modal {
 		}
 	}
 
-	// ── Header with lang toggle ──
-
 	private renderHeader(parent: HTMLElement) {
 		const header = parent.createDiv({ cls: "moyu-header" });
 		const langBtn = header.createEl("button", {
@@ -611,13 +653,10 @@ class MoyuModal extends Modal {
 		});
 		langBtn.addEventListener("click", () => {
 			this.plugin.data.lang = this.plugin.data.lang === "zh" ? "en" : "zh";
-			this.plugin.save();
-			// Re-render entire modal
+			void this.plugin.save();
 			this.onOpen();
 		});
 	}
-
-	// ── Dashboard ──
 
 	private renderDashboard(parent: HTMLElement) {
 		const card = parent.createDiv({ cls: "moyu-card moyu-dashboard" });
@@ -641,8 +680,6 @@ class MoyuModal extends Modal {
 		this.baseEl = c2.createSpan({ cls: "moyu-capsule-val", text: "0" });
 	}
 
-	// ── Goal ──
-
 	private renderGoal(parent: HTMLElement) {
 		const bar = parent.createDiv({ cls: "moyu-goal-bar" });
 
@@ -657,18 +694,16 @@ class MoyuModal extends Modal {
 		});
 		input.addEventListener("change", () => {
 			this.plugin.data.targetWage = parseFloat(input.value) || 150;
-			this.plugin.save();
+			void this.plugin.save();
 		});
 	}
-
-	// ── Timers ──
 
 	private renderTimers(parent: HTMLElement) {
 		const grid = parent.createDiv({ cls: "moyu-timer-grid" });
 
 		this.fishUnit = grid.createDiv({ cls: "moyu-timer-unit" });
 		this.fishUnit.addEventListener("click", () => {
-			this.plugin.startMode("fish");
+			void this.plugin.startMode("fish");
 			this.tick();
 		});
 		const fishIcon = this.fishUnit.createDiv({ cls: "moyu-unit-icon" });
@@ -684,7 +719,7 @@ class MoyuModal extends Modal {
 
 		this.hustleUnit = grid.createDiv({ cls: "moyu-timer-unit" });
 		this.hustleUnit.addEventListener("click", () => {
-			this.plugin.startMode("hustle");
+			void this.plugin.startMode("hustle");
 			this.tick();
 		});
 		const hustleIcon = this.hustleUnit.createDiv({ cls: "moyu-unit-icon" });
@@ -703,12 +738,10 @@ class MoyuModal extends Modal {
 			cls: "moyu-btn-stop",
 		});
 		stopBtn.addEventListener("click", () => {
-			this.plugin.stopAll();
+			void this.plugin.stopAll();
 			this.tick();
 		});
 	}
-
-	// ── Toolbar ──
 
 	private renderToolbar(parent: HTMLElement) {
 		const row = parent.createDiv({ cls: "moyu-tools-row" });
@@ -725,7 +758,7 @@ class MoyuModal extends Modal {
 				cls: "moyu-btn-tool",
 			});
 			btn.addEventListener("click", () => {
-				this.plugin.manualAdd(b.mins);
+				void this.plugin.manualAdd(b.mins);
 				this.tick();
 			});
 		}
@@ -736,13 +769,11 @@ class MoyuModal extends Modal {
 		});
 		manualBtn.addEventListener("click", () => {
 			new ManualInputModal(this.app, this.plugin, (val) => {
-				this.plugin.manualAdd(val);
+				void this.plugin.manualAdd(val);
 				this.tick();
 			}).open();
 		});
 	}
-
-	// ── Settings ──
 
 	private renderSettings(parent: HTMLElement) {
 		const wrapper = parent.createDiv({ cls: "moyu-settings-wrapper" });
@@ -752,16 +783,15 @@ class MoyuModal extends Modal {
 			cls: "moyu-btn-tool moyu-settings-toggle",
 		});
 
-		const panel = wrapper.createDiv({ cls: "moyu-settings-panel" });
-		panel.style.display = "none";
+		const panel = wrapper.createDiv({ cls: "moyu-settings-panel moyu-hidden" });
 
 		toggle.addEventListener("click", () => {
-			panel.style.display = panel.style.display === "none" ? "block" : "none";
+			panel.toggleClass("moyu-hidden", !panel.hasClass("moyu-hidden"));
 		});
 
 		const fields: Array<{
 			labelKey: string;
-			key: keyof MoyuData;
+			key: NumericDataKey;
 			icon: string;
 		}> = [
 			{ labelKey: "dailyPay", key: "income", icon: "banknote" },
@@ -784,8 +814,8 @@ class MoyuModal extends Modal {
 				value: String(this.plugin.data[f.key]),
 			});
 			input.addEventListener("change", () => {
-				(this.plugin.data as any)[f.key] = parseFloat(input.value) || 0;
-				this.plugin.save();
+				this.plugin.data[f.key] = parseFloat(input.value) || 0;
+				void this.plugin.save();
 				if (f.key === "waterInterval" || f.key === "waterLockDuration") {
 					this.plugin.startWaterTimer();
 				}
@@ -828,8 +858,6 @@ class MoyuModal extends Modal {
 		});
 	}
 
-	// ── History ──
-
 	private renderHistory(parent: HTMLElement) {
 		const card = parent.createDiv({ cls: "moyu-card" });
 		this.renderHistoryInner(card);
@@ -851,14 +879,19 @@ class MoyuModal extends Modal {
 			cls: "moyu-btn-archive",
 		});
 		archiveBtn.addEventListener("click", () => {
-			const confirmed = confirm(t(this.lang, "archiveConfirm"));
-			if (confirmed) {
-				this.plugin.archiveDay();
-				this.tick();
-				card.empty();
-				this.renderHistoryInner(card);
-				new Notice(t(this.lang, "archived"));
-			}
+			new ConfirmModal(
+				this.app,
+				t(this.lang, "archiveTitle"),
+				t(this.lang, "archiveConfirm"),
+				() => {
+					void this.plugin.archiveDay().then(() => {
+						this.tick();
+						card.empty();
+						this.renderHistoryInner(card);
+						new Notice(t(this.lang, "archived"));
+					});
+				}
+			).open();
 		});
 	}
 
@@ -869,7 +902,7 @@ class MoyuModal extends Modal {
 				text: t(this.lang, "trend"),
 			});
 			const chartContainer = card.createDiv({ cls: "moyu-chart-container" });
-			chartContainer.innerHTML = this.buildSVGChart();
+			this.buildSVGChart(chartContainer);
 		}
 
 		card.createDiv({
@@ -897,21 +930,27 @@ class MoyuModal extends Modal {
 				const del = li.createSpan({ cls: "moyu-del-icon", text: "x" });
 				const idx = i;
 				del.addEventListener("click", () => {
-					if (confirm(t(this.lang, "deleteConfirm"))) {
-						this.plugin.deleteRecord(idx);
-						card.empty();
-						this.renderHistoryInner(card);
-					}
+					new ConfirmModal(
+						this.app,
+						t(this.lang, "deleteTitle"),
+						t(this.lang, "deleteConfirm"),
+						() => {
+							void this.plugin.deleteRecord(idx).then(() => {
+								card.empty();
+								this.renderHistoryInner(card);
+							});
+						}
+					).open();
 				});
 			}
 		}
 	}
 
-	// ── SVG Chart ──
+	// ── SVG Chart (DOM API instead of innerHTML) ──
 
-	private buildSVGChart(): string {
+	private buildSVGChart(container: HTMLElement): void {
 		const history = this.plugin.data.history;
-		if (history.length < 2) return "";
+		if (history.length < 2) return;
 
 		const rates = history.map((h) => parseFloat(h.rate));
 		const minR = Math.min(...rates);
@@ -925,28 +964,46 @@ class MoyuModal extends Modal {
 		const plotW = W - padX * 2;
 		const plotH = H - padY * 2;
 
-		const points: string[] = [];
-		const circles: string[] = [];
-		const labels: string[] = [];
+		const ns = "http://www.w3.org/2000/svg";
+		const svg = document.createElementNS(ns, "svg");
+		svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+		svg.classList.add("moyu-svg-chart");
+
+		const pointsArr: string[] = [];
 
 		for (let i = 0; i < history.length; i++) {
 			const x = padX + (i / (history.length - 1)) * plotW;
 			const y = padY + plotH - ((rates[i] - minR) / range) * plotH;
-			points.push(`${x},${y}`);
-			circles.push(
-				`<circle cx="${x}" cy="${y}" r="3" fill="var(--interactive-accent)" />`
-			);
+			pointsArr.push(`${x},${y}`);
+
+			const circle = document.createElementNS(ns, "circle");
+			circle.setAttribute("cx", String(x));
+			circle.setAttribute("cy", String(y));
+			circle.setAttribute("r", "3");
+			circle.setAttribute("fill", "var(--interactive-accent)");
+			svg.appendChild(circle);
+
 			if (i === 0 || i === history.length - 1) {
-				labels.push(
-					`<text x="${x}" y="${H - 2}" text-anchor="middle" fill="var(--text-muted)" font-size="10">${history[i].date}</text>`
-				);
+				const text = document.createElementNS(ns, "text");
+				text.setAttribute("x", String(x));
+				text.setAttribute("y", String(H - 2));
+				text.setAttribute("text-anchor", "middle");
+				text.setAttribute("fill", "var(--text-muted)");
+				text.setAttribute("font-size", "10");
+				text.textContent = history[i].date;
+				svg.appendChild(text);
 			}
 		}
 
-		return `<svg viewBox="0 0 ${W} ${H}" class="moyu-svg-chart">
-			<polyline points="${points.join(" ")}" fill="none" stroke="var(--interactive-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-			${circles.join("")}
-			${labels.join("")}
-		</svg>`;
+		const polyline = document.createElementNS(ns, "polyline");
+		polyline.setAttribute("points", pointsArr.join(" "));
+		polyline.setAttribute("fill", "none");
+		polyline.setAttribute("stroke", "var(--interactive-accent)");
+		polyline.setAttribute("stroke-width", "2");
+		polyline.setAttribute("stroke-linecap", "round");
+		polyline.setAttribute("stroke-linejoin", "round");
+		svg.insertBefore(polyline, svg.firstChild);
+
+		container.appendChild(svg);
 	}
 }

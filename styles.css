@@ -618,3 +618,31 @@
 .moyu-about-sep {
   color: var(--text-faint);
 }
+
+/* ─── Utility Classes ──────────────────────────────────────────────────────── */
+
+.moyu-hidden {
+  display: none !important;
+}
+
+.moyu-no-pointer {
+  pointer-events: none;
+}
+
+/* ─── Confirm Modal ────────────────────────────────────────────────────────── */
+
+.moyu-confirm-content {
+  padding: 20px;
+}
+
+.moyu-confirm-title {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.moyu-confirm-msg {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
