@@ -41,7 +41,7 @@ const I18N: Record<Lang, Record<string, string>> = {
 		langSwitch: "EN",
 		deleteConfirm: "删除这条记录？",
 		about: "关于",
-		aboutAuthor: "by innerpure",
+		aboutAuthor: "By innerpure",
 		aboutDesc: "一个帮你看清真实时薪的小工具。",
 		aboutSite: "innerpure.cn",
 		aboutDada: "和答答聊聊",
@@ -84,7 +84,7 @@ const I18N: Record<Lang, Record<string, string>> = {
 		langSwitch: "中",
 		deleteConfirm: "Delete this record?",
 		about: "About",
-		aboutAuthor: "by innerpure",
+		aboutAuthor: "By innerpure",
 		aboutDesc: "A tool that reveals your real hourly rate.",
 		aboutSite: "innerpure.cn",
 		aboutDada: "Chat with Dada",
@@ -865,7 +865,7 @@ class MoyuModal extends Modal {
 		// Footer signature
 		const footer = parent.createDiv({ cls: "moyu-footer" });
 		const link = footer.createEl("a", {
-			text: "by innerpure",
+			text: "By innerpure",
 			cls: "moyu-footer-link",
 			href: "https://innerpure.cn",
 		});
